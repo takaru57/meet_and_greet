@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML Sample</title>
+  <style type="text/css">
+    .main {
+      text-align: center;
+    }
+    #time {
+      font-size: 150px;
+      text-align: center;
+      line-height: 10px;
+    }
+
+    #timeMeter {
+      display: inline-block;
+      width: 300px;
+      height: 300px;
+      text-align: center;
+      line-height: 10px;
+      border-radius: 50%;
+      border: solid 3px skyblue;
+      margin-bottom: 32px;
+    }
+
+  </style>
+</head>
+
+<body id="body">
+  <div class="main">
+    <h1>ミーグリタイマー</h1>
+    <div id="timeMeter">
+      <p id="time">10</p>
+    </div>
+    <div>
+      <select id="maisuu">
+        <option value="10">1枚</option>
+        <option value="20">2枚</option>
+        <option value="30">3枚</option>
+        <option value="40">4枚</option>
+        <option value="50">5枚</option>
+        <option value="60">6枚</option>
+        <option value="70">7枚</option>
+        <option value="80">8枚</option>
+        <option value="90">9枚</option>
+        <option value="100">10枚</option>
+        <option value="110">11枚</option>
+        <option value="120">12枚</option>
+      </select>
+      <button id="startBtn" type="button" onclick="start()">ミーグリスタート！</button>
+      <!-- <button type="button" onclick="reset()">リセット</button> -->
+    </div>
+  </div>
+</body>
+<script>
+  let startFlg = false;
+  let text = document.getElementById("time");
+  let address = document.getElementById('maisuu');
+  let remSec = 10;
+
+  maisuu.addEventListener('change', inputChange);
+
+  // エンターキー
+  window.document.onkeydown = function(event){
+      if (event.key === 'Enter') {
+        start();
+      }
+  }
+
+  // プルダウン選択時
+  function inputChange(event) {
+    text.innerText = event.currentTarget.value;
+    body.style.backgroundColor = "#ffffff";
+
+  }
+
+  function start(waitSec = 100) {
+    if (!startFlg) {
+      startFlg = true;
+      let body = document.getElementById("body");
+      let wari;
+
+      waitSec = maisuu.options[maisuu.selectedIndex].value;
+      console.log(waitSec + "秒");
+      // 経過時間（秒）
+      var spanedSec = 0;
+      // 1秒間隔で実行
+      var id = setInterval(function () {
+        spanedSec++;
+        remSec = waitSec - spanedSec;
+        text.innerText = remSec;
+
+        wari = (spanedSec / waitSec) * 100;
+        console.log(wari + "%");
+        if((remSec < 15 && waitSec > 30) || wari > 85){
+          body.style.backgroundColor = "#ff7f50";
+        }else  if (wari < 25) {
+          body.style.backgroundColor = "#ffffff";
+        } else if (wari < 50) {
+          body.style.backgroundColor = "#87cefa";
+        } else {
+          body.style.backgroundColor = "#fffacd";
+        } 
+
+        // 経過時間 >= 待機時間の場合、待機終了。
+        if (spanedSec >= waitSec) {
+          // タイマー停止
+          clearInterval(id);
+          startFlg = false;
+        }
+      }, 1000);
+    }else{
+      
+    }
+  }
+
+  function reset() {
+  }
+</script>
+
+</html>
