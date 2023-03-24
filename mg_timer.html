@@ -8,24 +8,41 @@
     .main {
       text-align: center;
     }
-    #time {
+
+    #sec {
       font-size: 150px;
       text-align: center;
-      line-height: 10px;
+      margin: auto;
+    }
+
+    #dec {
+      font-size: 60px;
+      text-align: center;
+      position: relative;
+      bottom: -130px;
     }
 
     #timeBg {
-      display: inline-block;
-      width: 300px;
-      height: 300px;
+      margin: 0 auto 0 auto;
+      width: 400px;
+      height: 400px;
       text-align: center;
-      line-height: 10px;
+      /* line-height: 10px; */
       border-radius: 50%;
       border: solid 5px rgb(0, 54, 153);
       margin-bottom: 32px;
       background: #FFFFFF
     }
 
+    .text {
+      display: inline-flex;
+      height: 400px;
+      position: relative;
+    }
+
+    #resetBtn {
+      margin-top: 32px;
+    }
   </style>
 </head>
 
@@ -33,7 +50,10 @@
   <div class="main">
     <h1>ミーグリタイマー</h1>
     <div id="timeBg">
-      <p id="time">10</p>
+      <div class="text">
+        <p id="sec">10</p>
+        <p id="dec">.00</p>
+      </div>
     </div>
     <div>
       <select id="maisuu">
@@ -51,23 +71,25 @@
         <option value="120">12枚</option>
       </select>
       <button id="startBtn" type="button" onclick="start()">ミーグリスタート！</button>
-      <!-- <button type="button" onclick="reset()">リセット</button> -->
     </div>
+    <button id="resetBtn" onclick="reset()">リセット</button>
   </div>
 </body>
 <script>
   let startFlg = false;
-  let text = document.getElementById("time");
+  let text = document.getElementById("sec");
+  let dec = document.getElementById("dec");
   let address = document.getElementById('maisuu');
   let remSec = 10;
+  let id;
 
   maisuu.addEventListener('change', inputChange);
 
   // エンターキー
-  window.document.onkeydown = function(event){
-      if (event.key === 'Enter') {
-        start();
-      }
+  window.document.onkeydown = function (event) {
+    if (event.key === 'Enter') {
+      start();
+    }
   }
 
   document.getElementById('timeBg').addEventListener('click', start);
@@ -87,39 +109,68 @@
 
       waitSec = maisuu.options[maisuu.selectedIndex].value;
       console.log(waitSec + "秒");
+
+      waitSec -= 1;
+      var remSec = waitSec;
+      text.innerText = remSec;
+
       // 経過時間（秒）
       var spanedSec = 0;
-      // 1秒間隔で実行
-      var id = setInterval(function () {
-        spanedSec++;
-        remSec = waitSec - spanedSec;
-        text.innerText = remSec;
+      var interval = 99;
+      // 0.1秒間隔で実行
+      id = setInterval(function () {
 
-        wari = (spanedSec / waitSec) * 100;
-        console.log(wari + "%");
-        if((remSec < 15 && waitSec > 30) || wari > 85){
-          body.style.backgroundColor = "#ff7f50";
-        }else  if (wari < 25) {
-          body.style.backgroundColor = "#ffffff";
-        } else if (wari < 50) {
-          body.style.backgroundColor = "#87cefa";
+        interval--;
+        if (interval < 10) {
+          dec.innerText = ".0" + interval;
         } else {
-          body.style.backgroundColor = "#fffacd";
-        } 
-
-        // 経過時間 >= 待機時間の場合、待機終了。
-        if (spanedSec >= waitSec) {
-          // タイマー停止
-          clearInterval(id);
-          startFlg = false;
+          dec.innerText = "." + interval;
         }
-      }, 1000);
-    }else{
-      
+
+
+        if (interval == 0) {
+          spanedSec++;
+
+          remSec = waitSec - spanedSec;
+          text.innerText = remSec;
+
+          wari = (spanedSec / waitSec) * 100;
+          console.log(wari + "%");
+          if ((remSec < 15 && waitSec > 30) || wari > 85) {
+            body.style.backgroundColor = "#ff7f50";
+          } else if (wari < 25) {
+            body.style.backgroundColor = "#ffffff";
+          } else if (wari < 50) {
+            body.style.backgroundColor = "#87cefa";
+          } else {
+            body.style.backgroundColor = "#fffacd";
+          }
+
+          // 経過時間 >= 待機時間の場合、待機終了。
+          if (spanedSec >= waitSec) {
+            // タイマー停止
+            clearInterval(id);
+            startFlg = false;
+          }
+
+          interval = 99;
+        }
+
+      }, 10);
+    } else {
+
     }
   }
 
   function reset() {
+    console.log("???");
+    if (startFlg) {
+      clearInterval(id);
+      startFlg = false;
+    }
+    text.innerText = maisuu.value;
+    dec.innerText = ".00"
+    body.style.backgroundColor = "#ffffff";
   }
 </script>
 
