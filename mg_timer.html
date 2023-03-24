@@ -110,12 +110,14 @@
       waitSec = maisuu.options[maisuu.selectedIndex].value;
       console.log(waitSec + "秒");
 
+      // 小数点表示があるので開始時に-1
       waitSec -= 1;
       var remSec = waitSec;
       text.innerText = remSec;
 
       // 経過時間（秒）
       var spanedSec = 0;
+      // 小数点
       var interval = 99;
       // 0.1秒間隔で実行
       id = setInterval(function () {
@@ -131,7 +133,9 @@
         if (interval == 0) {
           spanedSec++;
 
-          remSec = waitSec - spanedSec;
+          if (remSec > 0) {
+            remSec = waitSec - spanedSec;
+          }
           text.innerText = remSec;
 
           wari = (spanedSec / waitSec) * 100;
@@ -147,7 +151,7 @@
           }
 
           // 経過時間 >= 待機時間の場合、待機終了。
-          if (spanedSec >= waitSec) {
+          if ((spanedSec - 1) >= waitSec) {
             // タイマー停止
             clearInterval(id);
             startFlg = false;
